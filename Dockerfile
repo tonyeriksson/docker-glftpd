@@ -1,4 +1,4 @@
-FROM phusion/baseimage:0.11
+FROM phusion/baseimage:noble-1.0.2
 CMD ["/sbin/my_init"]
 RUN rm -rf /etc/service
 COPY root/ /
