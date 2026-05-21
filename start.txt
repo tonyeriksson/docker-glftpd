@@ -1,0 +1,54 @@
+#docker create --name=glftpd --net=host -v /storage/glftpd/ftp-data:/glftpd/ftp-data -v /storage/glftpd/site:/glftpd/site -e GL_PORT=38128 -e TZ=Europe/Stockholm -e GL_RESET_ARGS=-e glftpd
+
+
+### USED ###
+
+# create a reusable volume
+docker volume create --driver local --opt type=nfs --opt o=nfsvers=4,addr=192.168.1.112,rw --opt device=:/volume1/site glftpd-site
+docker volume create --driver local --opt type=nfs --opt o=nfsvers=4,addr=192.168.1.100,rw --opt device=:/site/x265-2160 brallan-site-x265
+docker volume create --driver local --opt type=nfs --opt o=nfsvers=4,addr=192.168.1.100,rw --opt device=:/site/games brallan-site-games
+docker volume create --driver local --opt type=nfs --opt o=nfsvers=4,addr=192.168.1.100,rw --opt device=:/site/tv-x264 brallan-site-tv-x264
+
+docker create --privileged --restart=always --name=glftpd --net=host -v /storage/glftpd/ftp-data:/glftpd/ftp-data -v glftpd-site:/glftpd/site -v brallan-site-x265:/glftpd/site/x265-2160 -v brallan-site-games:/glftpd/site/games -v brallan-site-tv-x264:/glftpd/site/tv-x264 -e GL_PORT=42135 -e TZ=Europe/Stockholm -e GL_RESET_ARGS=-e glftpd
+
+docker start glftpd
+
+# set docker to start at bootup
+docker update --restart unless-stopped glftpd
+
+# rebuild after changes in conf
+docker build -t glftpd  . --no-cache
+
+##############
+
+
+
+
+
+docker create --privileged --name=glftpd --net=host -v /storage/glftpd/ftp-data:/glftpd/ftp-data -e GL_PORT=42135 -e TZ=Europe/Stockholm -e GL_RESET_ARGS=-e glftpd
+
+#docker create --privileged --name=glftpd --net=host -v /storage/glftpd/ftp-data:/glftpd/ftp-data --mount type=volume,dst=/container/path,volume-driver=local,volume-opt=type=nfs,\"volume-opt=o=nfsvers=4,addr=192.168.1.112\",volume-opt=device=:/glftpd/site glftpd-site -e GL_PORT=42135 -e TZ=Europe/Stockholm -e GL_RESET_ARGS=-e glftpd
+
+192.168.1.112:/volume1/site             /glftpd/site  nfs    rsize=8192,wsize=8192
+
+
+##update 2026-05-17
+körde detta
+docker stop glftpd
+docker rm glftpd
+update config
+# rebuild after changes in conf
+docker build -t glftpd  . --no-cache
+
+docker create --privileged --restart=always --name=glftpd --net=host -v /storage/glftpd/ftp-data:/glftpd/ftp-data -v glftpd-site:/glftpd/site -v /storage/x264:/glftpd/site/x264 -v brallan-site-x265:/glftpd/site/x265-2160 -v brallan-site-games:/glftpd/site/games -v brallan-site-tv-x264:/glftpd/site/tv-x264 -e GL_PORT=42135 -e TZ=Europe/Stockholm -e GL_RESET_ARGS=-e glftpd
+
+
+docker create --privileged --restart=always --name=glftpd --net=host -v /opt/docker/glftpd/ftp-data:/glftpd/ftp-data -v /mnt/x264:/glftpd/site/x264 -e GL_PORT=42135 -e TZ=Europe/Stockholm -e GL_RESET_ARGS=-e glftpd
+
+##update 2026-05-21 docker-compose stuff
+
+
+docker compose build — builds the image from the Dockerfile, tags it as glftpd. Doesn't start anything. 
+docker compose up -d — builds the image if it doesn't exist yet, then starts the container. Doesn't rebuild if the image already exists, even if you changed the Dockerfile. 
+docker compose up -d --build — forces a rebuild before starting. This is what you want after editing the Dockerfile.
+docker compose build --no-cache — full rebuild from scratch, ignoring Docker's layer cache. Useful when you've changed something that the cache doesn't detect (like a remote dependency you want to refetch).

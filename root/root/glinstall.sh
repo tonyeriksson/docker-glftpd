@@ -1,7 +1,9 @@
 #!/bin/bash
 # To install tzdata noninteractive
 export DEBIAN_FRONTEND=noninteractive
-export tgz_name="glftpd-LNX-2.16_3.6.0_x64"
+export tgz_name="glftpd-LNX-2.16_3.6.0_ARM_MIPS"
+#export tgz_name="glftpd-LNX-2.16_3.6.0_x64"
+export correct_arm_name="glftpd-raspberry_pi-64bit_cross-pi-gcc-14.2.0-64-2.16"
 
 # Install necessary packages
 apt-get update
@@ -16,6 +18,10 @@ wget https://glftpd.io/files/${tgz_name}.tgz
 tar xzvf ${tgz_name}.tgz
 rm ${tgz_name}.tgz
 cd ${tgz_name}
+tar xzvf ${correct_arm_name}.tgz
+rm *.tgz
+cd ${correct_arm_name}
+
 { echo; echo n; echo n; echo; echo; echo; echo x; echo n; echo /ftp-data; echo; echo; echo; } | ./installgl.sh
 # ^ bug on line 1251, //ftp-data
 
@@ -42,5 +48,7 @@ sed -i '/^DHPARAM_FILE/s/^/#/g' $data_path/glftpd.conf
 
 # Install unrar for /glftpd/bin/zipscript
 cp /usr/bin/unrar /glftpd/bin/
-cp /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /glftpd/lib/x86_64-linux-gnu/
-cp /lib/x86_64-linux-gnu/libgcc_s.so.1 /glftpd/lib/x86_64-linux-gnu/
+#cp /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /glftpd/lib/x86_64-linux-gnu/
+#cp /lib/x86_64-linux-gnu/libgcc_s.so.1 /glftpd/lib/x86_64-linux-gnu/
+cp /usr/lib/aarch64-linux-gnu/libstdc++.so.6 /glftpd/lib/aarch64-linux-gnu/
+cp /lib/aarch64-linux-gnu/libgcc_s.so.1 /glftpd/lib/aarch64-linux-gnu/

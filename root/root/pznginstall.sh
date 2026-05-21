@@ -1,16 +1,29 @@
 #!/bin/bash
 cd /root
-wget https://github.com/pzs-ng/pzs-ng/archive/master.zip
+#wget https://github.com/pzs-ng/pzs-ng/archive/master.zip
+## repos has moved?
+wget https://github.com/glftpd/pzs-ng/archive/refs/heads/master.zip
 unzip master.zip -d /glftpd/ftp-data/
 rm master.zip
 cd /glftpd/ftp-data/pzs-ng-master
 apt-get update
-install_clean gcc file make libssl-dev libc6-dev lynx
-./configure
-sed -i 's/#define sfv_dirs.*/#define sfv_dirs                     "\/site\/x264\/ \/site\/tv\/ \/site\/dvdr\/ \/site\/games\ \/site\/requests\/ \/site\/x265\/ \/site\/xvid\/\"/' zipscript/conf/zsconfig.h
+install_clean gcc file make libssl-dev libc6-dev lynx libflac-dev
+/glftpd/libcopy.sh /glftpd
+#./configure 
+./configure --build=aarch64-unknown-linux-gnu --enable-flac
+pwd
+sed -i 's/#define sfv_dirs.*/#define sfv_dirs                     "\/site\/archive\/tv\/ \/site\/archive\/xvid\/ \/site\/audiobook\/ \/site\/dvdr\/ \/site\/ebook\/ \/site\/flac\/ \/site\/games\/ \/site\/mp3\/ \/site\/psp\/ \/site\/requests\/ \/site\/tv-x264\/ \/site\/x264\/ \/site\/x265-2160\/\"/' zipscript/conf/zsconfig.h
+sed -i 's/#define zip_dirs.*/#define zip_dirs                     "\/site\/dump\/' zipscript/conf/zsconfig.h
+sed -i 's/#define check_for_missing_nfo_dirs.*/#define check_for_missing_nfo_dirs   "\/site\/archive\/tv\/ \/site\/archive\/xvid\/ \/site\/audiobook\/ \/site\/dvdr\/ \/site\/ebook\/ \/site\/flac\/ \/site\/games\/ \/site\/mp3\/ \/site\/psp\/ \/site\/requests\/ \/site\/tv-x264\/ \/site\/x264\/ \/site\/x265-2160\/\"/' zipscript/conf/zsconfig.h
+sed -i 's/#define cleanupdirs .*/#define cleanupdirs                  "\/site\/archive\/tv\/ \/site\/archive\/xvid\/ \/site\/audiobook\/ \/site\/dvdr\/ \/site\/ebook\/ \/site\/flac\/ \/site\/games\/ \/site\/mp3\/ \/site\/psp\/ \/site\/requests\/ \/site\/tv-x264\/ \/site\/x264\/ \/site\/x265-2160\/\"/' zipscript/conf/zsconfig.h
+sed -i 's/#define noforce_sfv_first_dirs.*/#define noforce_sfv_first_dirs       "\/site\/requests\/\"/' zipscript/conf/zsconfig.h
+sed -i 's/#define short_sitename.*/#define short_sitename               \"CS\"/' zipscript/conf/zsconfig.h
+
 sed -i 's/define GROUPFILE .*/define GROUPFILE                                 "\/ftp-data\/group\"/' zipscript/include/zsconfig.defaults.h
 sed -i 's/define PASSWDFILE .*/define PASSWDFILE                                "\/ftp-data\/passwd\"/' zipscript/include/zsconfig.defaults.h
 sed -i 's/etc\/group/ftp-data\/group/g' scripts/audio-genre/audio-genre-create.sh
+
+cp zipscript/conf/zsconfig.h zipscript/conf/zsconfig.h.vafan 
 make
 make install
 echo "

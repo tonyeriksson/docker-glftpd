@@ -1,0 +1,27 @@
+services:
+  glftpd:
+    build: .
+    image: glftpd
+    container_name: glftpd
+    network_mode: host
+    privileged: true
+    restart: unless-stopped
+    environment:
+      - GL_PORT=42135
+      - TZ=Europe/Stockholm
+      - GL_RESET_ARGS=-e
+    volumes:
+      - /opt/docker/glftpd/ftp-data:/glftpd/ftp-data
+      - /opt/docker/glftpd/site:/glftpd/site
+      - /mnt/audiobook:/glftpd/site/audiobook
+      - /mnt/dump:/glftpd/site/dump
+      - /mnt/archive:/glftpd/site/archive
+      - /mnt/dvdr:/glftpd/site/dvdr
+      - /mnt/ebook:/glftpd/site/ebook
+      - /mnt/tv-x264:/glftpd/site/tv-x264
+      - /mnt/x264:/glftpd/site/x264
+      - /mnt/requests:/glftpd/site/requests
+      - /mnt/flac:/glftpd/site/flac
+      - /mnt/mp3:/glftpd/site/mp3
+      - /mnt/x265-2160:/glftpd/site/x265-2160
+      - /mnt/psp:/glftpd/site/psp
